@@ -1,0 +1,66 @@
+name: Build Windows Package
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Build onefile exe
+        shell: pwsh
+        run: |
+          pyinstaller --noconfirm --clean --onefile --name CB2TManager `
+            --add-data "app\\templates;app\\templates" `
+            --add-data "app\\static;app\\static" `
+            run_cb2t.py
+
+      - name: Assemble package
+        shell: pwsh
+        run: |
+          $pkg = "dist\\CB2TManager-win64"
+          if (Test-Path $pkg) { Remove-Item -Recurse -Force $pkg }
+          New-Item -ItemType Directory -Path $pkg | Out-Null
+          New-Item -ItemType Directory -Path "$pkg\\demo" | Out-Null
+
+          Copy-Item "dist\\CB2TManager.exe" "$pkg\\CB2TManager.exe"
+          Copy-Item "demo\\topology-demo.json" "$pkg\\demo\\topology-demo.json"
+          Copy-Item "demo\\topology-demo.csv" "$pkg\\demo\\topology-demo.csv"
+
+          @"
+CB2T Manager package
+
+Run:
+1) Double click CB2TManager.exe
+2) Browser opens on http://127.0.0.1:8000
+3) In BERT Config, import demo files from .\\demo
+"@ | Out-File -Encoding UTF8 "$pkg\\README.txt"
+
+      - name: Zip package
+        shell: pwsh
+        run: |
+          if (Test-Path "dist\\CB2TManager-win64.zip") { Remove-Item -Force "dist\\CB2TManager-win64.zip" }
+          Compress-Archive -Path "dist\\CB2TManager-win64\\*" -DestinationPath "dist\\CB2TManager-win64.zip" -CompressionLevel Optimal
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CB2TManager-win64
+          path: dist/CB2TManager-win64.zip

@@ -1,0 +1,6 @@
+{
+  "trays": 30,
+  "bports_per_tray": 4,
+  "phy_per_bport": 4,
+  "lanes_per_bport": 16
+}

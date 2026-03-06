@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CB2T Manager MVP</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">CB2T Manager</div>
+      <div class="clock" id="clock">--:--:--</div>
+    </header>
+
+    <main class="viewport">
+      <section id="launcher-screen" class="screen active">
+        <div class="launcher-wrap">
+          <div class="launcher-card">
+            <div class="launcher-top">
+              <div class="logo-box">CB2T</div>
+              <div class="mode-buttons">
+                <button class="mode-btn" data-target="bert-screen">BERT Config</button>
+                <button class="mode-btn" data-target="bert-screen">Test Config</button>
+                <button class="mode-btn" data-target="execution-screen">Test Exe</button>
+                <button class="mode-btn" data-target="system-screen">System Config</button>
+              </div>
+            </div>
+
+            <fieldset>
+              <legend>Project</legend>
+              <label>Name</label>
+              <input id="project-name" placeholder="Project Name" />
+              <div class="row2">
+                <div>
+                  <label>CBS Name</label>
+                  <input id="project-dut" placeholder="reference-dut" value="reference-dut" />
+                </div>
+                <div>
+                  <label>CBS Rev</label>
+                  <input id="project-rev" placeholder="2.1" value="2.1" />
+                </div>
+              </div>
+              <div class="btn-row">
+                <button id="load-project">Load</button>
+                <button id="save-project">Save</button>
+                <button id="new-project">New</button>
+              </div>
+              <label>Existing Projects</label>
+              <select id="project-select"></select>
+            </fieldset>
+
+            <fieldset>
+              <legend>Data Base</legend>
+              <label>Name</label>
+              <input placeholder="MVP Local SQLite" value="MVP Local SQLite" />
+              <div class="checks">
+                <label><input checked type="checkbox" /> CB2T Topology</label>
+                <label><input checked type="checkbox" /> Tests</label>
+                <label><input checked type="checkbox" /> Results</label>
+              </div>
+              <div class="btn-row">
+                <button>Import</button>
+                <button>Export</button>
+                <button>New</button>
+              </div>
+            </fieldset>
+
+            <div class="build">Rev-MVP-0.1 Build 000001</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="bert-screen" class="screen">
+        <div class="layout2">
+          <div class="left-panel">
+            <div class="screen-head"><button class="back-btn" data-target="launcher-screen">Back</button></div>
+            <h1>BERT<br />Configuration</h1>
+
+            <fieldset>
+              <legend>Hardware</legend>
+              <div class="file-row">
+                <input id="topology-file" type="file" accept=".json,.csv" />
+                <button id="import-topology-btn">Import</button>
+              </div>
+              <div class="topology-summary" id="topology-summary">Topology: not loaded</div>
+              <div class="file-row"><input placeholder="Harness Topology File" /><button>Import</button></div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Lane Configuration</legend>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>CBS Sig</th><th>Mating Pin</th><th>Tray</th><th>BPort</th><th>FE</th><th>DSP</th><th>DSP Port</th><th>Rx/Tx</th><th>AWG</th><th>Length</th><th>IL</th><th>TAP #1</th><th>TAP #2</th><th>TAP #3</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lane-table"></tbody>
+                </table>
+              </div>
+              <div class="btn-row right">
+                <button>Link Training</button>
+                <button>Start/Stop</button>
+                <label>PRBS Type</label>
+                <input class="small" value="PRBS31" />
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>DSP Configuration</legend>
+              <div class="btn-row">
+                <label>Value Register</label><input class="small" />
+                <button>Read</button><button>Write</button>
+                <label>File</label><input class="small" />
+                <button>FW Update</button>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Log</legend>
+              <pre id="bert-log" class="log"></pre>
+            </fieldset>
+          </div>
+
+          <aside class="map-panel">
+            <div class="map-tools">
+              <button class="map-zoom-out" data-map="bert-map">-</button>
+              <button class="map-zoom-reset" data-map="bert-map">1:1</button>
+              <button class="map-zoom-in" data-map="bert-map">+</button>
+              <div class="status-pill" id="bert-status">Status</div>
+            </div>
+            <div id="bert-map" class="cb2t-map"></div>
+            <div class="control-box">
+              <div class="legend">
+                <span class="dot black"></span>Not Connected
+                <span class="dot gray"></span>Not Defined
+                <span class="dot yellow"></span>Connected
+                <span class="dot green"></span>Pass
+                <span class="dot red"></span>Fail
+                <span class="dot orange"></span>Error
+                <span class="dot blue"></span>Selected
+              </div>
+              <div class="btn-row">
+                <button id="connect-btn">Connect</button>
+                <button id="disconnect-btn">Disconnect</button>
+                <button id="reset-btn">Reset</button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="execution-screen" class="screen">
+        <div class="layout2">
+          <div class="left-panel">
+            <div class="screen-head"><button class="back-btn" data-target="launcher-screen">Back</button></div>
+            <h1 id="test-name">Test Name</h1>
+
+            <fieldset>
+              <legend>Operator</legend>
+              <div class="form-row"><label>Operator</label><input id="op-name" value="operator" /></div>
+              <div class="form-row"><label>Serial Number</label><input id="dut-serial" placeholder="SN-001" /></div>
+              <div class="form-row"><label>Notes</label><input id="test-notes" /></div>
+            </fieldset>
+
+            <div class="run-panel">
+              <button id="run-btn" class="play">▶</button>
+              <div>
+                <div id="run-state" class="run-state neutral">RUN</div>
+                <div id="run-timer" class="timer">00:00:00</div>
+              </div>
+            </div>
+
+            <fieldset>
+              <legend>Log</legend>
+              <pre id="exec-log" class="log"></pre>
+            </fieldset>
+          </div>
+
+          <aside class="map-panel">
+            <div class="map-tools">
+              <button class="map-zoom-out" data-map="exec-map">-</button>
+              <button class="map-zoom-reset" data-map="exec-map">1:1</button>
+              <button class="map-zoom-in" data-map="exec-map">+</button>
+              <div class="status-pill" id="exec-status">Status</div>
+            </div>
+            <div id="exec-map" class="cb2t-map"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="system-screen" class="screen">
+        <div class="screen-head"><button class="back-btn" data-target="launcher-screen">Back</button></div>
+        <div class="placeholder">System Config (MVP pending)</div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
