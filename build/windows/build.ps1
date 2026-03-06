@@ -12,6 +12,10 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt pyinstaller
 
 pyinstaller --noconfirm --clean --onefile --name CB2TManager `
+  --hidden-import app.main `
+  --hidden-import app.db `
+  --hidden-import app.simulator `
+  --collect-submodules app `
   --add-data "app\templates;app\templates" `
   --add-data "app\static;app\static" `
   run_cb2t.py
