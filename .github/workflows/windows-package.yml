@@ -44,14 +44,15 @@ jobs:
           Copy-Item "demo\\topology-demo.json" "$pkg\\demo\\topology-demo.json"
           Copy-Item "demo\\topology-demo.csv" "$pkg\\demo\\topology-demo.csv"
 
-          @"
-CB2T Manager package
-
-Run:
-1) Double click CB2TManager.exe
-2) Browser opens on http://127.0.0.1:8000
-3) In BERT Config, import demo files from .\\demo
-"@ | Out-File -Encoding UTF8 "$pkg\\README.txt"
+          $readmeLines = @(
+            "CB2T Manager package",
+            "",
+            "Run:",
+            "1) Double click CB2TManager.exe",
+            "2) Browser opens on http://127.0.0.1:8000",
+            "3) In BERT Config, import demo files from .\\demo"
+          )
+          $readmeLines | Out-File -Encoding UTF8 "$pkg\\README.txt"
 
       - name: Zip package
         shell: pwsh
